@@ -1,83 +1,187 @@
-// Select Images
-const images = document.querySelectorAll(".image-card img");
+// SELECT ELEMENTS
 
-// Lightbox Elements
-const lightbox = document.getElementById("lightbox");
+const galleryItems = document.querySelectorAll(".gallery-item");
 
-const lightboxImg =
-document.getElementById("lightbox-img");
+const images = document.querySelectorAll(".gallery-item img");
 
-const closeBtn =
-document.querySelector(".close");
+const lightbox = document.querySelector(".lightbox");
 
-// Open Lightbox
-images.forEach((image) => {
+const lightboxImg = document.querySelector(".lightbox-img");
 
-    image.addEventListener("click", () => {
+const closeBtn = document.querySelector(".close");
 
-        lightbox.style.display = "flex";
+const nextBtn = document.querySelector(".next");
 
-        lightboxImg.src = image.src;
+const prevBtn = document.querySelector(".prev");
 
-    });
+const filterButtons = document.querySelectorAll(".filters button");
+
+// CURRENT IMAGE INDEX
+
+let currentIndex = 0;
+
+// OPEN LIGHTBOX
+
+images.forEach((img, index) => {
+
+  img.addEventListener("click", () => {
+
+    currentIndex = index;
+
+    showImage();
+
+    lightbox.style.display = "flex";
+
+  });
 
 });
 
-// Close Button
+// SHOW IMAGE
+
+function showImage(){
+
+  lightboxImg.src = images[currentIndex].src;
+
+}
+
+// CLOSE LIGHTBOX
+
 closeBtn.addEventListener("click", () => {
+
+  lightbox.style.display = "none";
+
+});
+
+// NEXT BUTTON
+
+nextBtn.addEventListener("click", () => {
+
+  currentIndex++;
+
+  if(currentIndex >= images.length){
+
+    currentIndex = 0;
+
+  }
+
+  showImage();
+
+});
+
+// PREV BUTTON
+
+prevBtn.addEventListener("click", () => {
+
+  currentIndex--;
+
+  if(currentIndex < 0){
+
+    currentIndex = images.length - 1;
+
+  }
+
+  showImage();
+
+});
+
+// CLOSE WHEN CLICK OUTSIDE
+
+lightbox.addEventListener("click", (e) => {
+
+  if(e.target === lightbox){
 
     lightbox.style.display = "none";
 
+  }
+
 });
 
-// Close Outside Click
-lightbox.addEventListener("click", (e) => {
+// KEYBOARD SUPPORT
 
-    if(e.target !== lightboxImg){
+document.addEventListener("keydown", (e) => {
 
-        lightbox.style.display = "none";
+  if(lightbox.style.display === "flex"){
+
+    if(e.key === "ArrowRight"){
+
+      currentIndex++;
+
+      if(currentIndex >= images.length){
+
+        currentIndex = 0;
+
+      }
+
+      showImage();
 
     }
 
+    if(e.key === "ArrowLeft"){
+
+      currentIndex--;
+
+      if(currentIndex < 0){
+
+        currentIndex = images.length - 1;
+
+      }
+
+      showImage();
+
+    }
+
+    if(e.key === "Escape"){
+
+      lightbox.style.display = "none";
+
+    }
+
+  }
+
 });
 
-// 3D Hover Tilt Effect
-const cards =
-document.querySelectorAll(".image-card");
+// FILTER FUNCTIONALITY
 
-cards.forEach((card) => {
+filterButtons.forEach(button => {
 
-    card.addEventListener("mousemove", (e) => {
+  button.addEventListener("click", () => {
 
-        const rect =
-        card.getBoundingClientRect();
+    // REMOVE ACTIVE CLASS
 
-        const x = e.clientX - rect.left;
+    filterButtons.forEach(btn => {
 
-        const y = e.clientY - rect.top;
-
-        const centerX = rect.width / 2;
-
-        const centerY = rect.height / 2;
-
-        const rotateX =
-        ((y - centerY) / 25);
-
-        const rotateY =
-        ((centerX - x) / 25);
-
-        card.style.transform =
-        `rotateX(${rotateX}deg)
-         rotateY(${rotateY}deg)
-         scale(1.03)`;
+      btn.classList.remove("active");
 
     });
 
-    card.addEventListener("mouseleave", () => {
+    // ADD ACTIVE CLASS
 
-        card.style.transform =
-        "rotateX(0) rotateY(0) scale(1)";
+    button.classList.add("active");
+
+    const filter = button.getAttribute("data-filter");
+
+    galleryItems.forEach(item => {
+
+      if(filter === "all"){
+
+        item.style.display = "block";
+
+      }
+
+      else if(item.classList.contains(filter)){
+
+        item.style.display = "block";
+
+      }
+
+      else{
+
+        item.style.display = "none";
+
+      }
 
     });
+
+  });
 
 });
